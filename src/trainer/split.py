@@ -21,7 +21,7 @@ def split_data(
     train_size = 0.8
 
     train_index = source_text.sample(frac=train_size, random_state=params["SEED"]).index
-    val_index = train_index.drop(train_index).index
+    val_index = source_text.drop(train_index).index
 
     train_source_text = source_text.loc[train_index].values
     train_target_text = target_text.loc[train_index].values

@@ -31,11 +31,10 @@ model_params = {
     "MODEL": "google/mt5-small",  # model_type: mt5-base/mt5-large
     "TRAIN_BATCH_SIZE": 8,  # training batch size
     "VALID_BATCH_SIZE": 8,  # validation batch size
-    "TRAIN_EPOCHS": 2,  # number of training epochs
-    "VAL_EPOCHS": 1,  # number of validation epochs
-    "LEARNING_RATE": 2e-4,  # learning rate
+    "TRAIN_EPOCHS": 10,  # number of training epochs
+    "LEARNING_RATE": 1e-5,  # learning rate
     "MAX_SOURCE_TEXT_LENGTH": 512,  # max length of source text
-    "MAX_TARGET_TEXT_LENGTH": 258,  # max length of target text
+    "MAX_TARGET_TEXT_LENGTH": 60,  # max length of target text
     "SEED": 42,  # set seed for reproducibility
 }
 
@@ -48,22 +47,21 @@ torch.backends.cudnn.deterministic = True
 def main():
     """Load data and start the finetune procces."""
 
-    print("[Dataset] Loading dataset...")
+    logger.info("[Dataset] Loading dataset...")
     df = pd.read_parquet(
         "/data/imeza/text_datasets/data_summarization_with_title.parquet"
-    )
+    ).sample(1000, random_state=42)
     # add summarize instruction to t5 to the main text.
     df["text"] = "summarize: " + df["text"]
 
-    print("[Dataset] Dataset load successfully completed.")
+    logger.info("[Dataset] Dataset load successfully completed.")
 
     mT5_trainer(
-        source_text=df.loc["text"],
-        target_text=df.loc["title"],
+        source_text=df.loc[:, "text"],
+        target_text=df.loc[:, "title"],
         model_params=model_params,
-        output_dir="/data/imeza/text_datasets/output",
+        output_dir="/data/imeza/text_datasets/outputs_mT5",
     )
-
 
 if __name__ == "__main__":
     main()

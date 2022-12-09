@@ -135,3 +135,7 @@ T5_Fine_tuning_with_PyTorch.ipynb
 
 # ruff
 .ruff_cache
+
+# mlflow logs
+mlruns/
+src/mlruns/

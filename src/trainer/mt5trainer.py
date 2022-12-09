@@ -94,7 +94,7 @@ def train(
     """
     Train the model with the specified parameters.
     """
-    logger.info(f"[Model training] Starting training epoch {epoch}")
+    logger.info(f"[Model training] Starting training epoch {epoch+1}")
 
     model.train()
     for batch_idx, data in enumerate(dataloader, 0):
@@ -117,11 +117,11 @@ def train(
         )
         loss = outputs[0]
 
-        if batch_idx % 10 == 0:
-            mlflow.log_metric("score", loss, batch_idx)
+        if batch_idx % 1 == 0:
+            mlflow.log_metric("Loss", loss, batch_idx+len(dataloader)*epoch)
 
             logger.info(
-                f"[Model training] Batch: {batch_idx}/{len(dataloader)} |"
+                f"[Model training] Batch: {batch_idx+1}/{len(dataloader)} | "
                 f"Loss: {str(round(float(loss), 3))}"
             )
 
@@ -193,7 +193,7 @@ def mT5_trainer(
     # Define the optimizer
 
     # Defining the optimizer that will be used to tune the weights in training session.
-    optimizer = torch.optim.Adam(
+    optimizer = torch.optim.AdamW(
         params=model.parameters(), lr=model_params["LEARNING_RATE"]
     )
 
