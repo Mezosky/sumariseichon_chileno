@@ -127,3 +127,8 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Folders
+/outputs
+./outputs
+T5_Fine_tuning_with_PyTorch.ipynb
