@@ -29,12 +29,12 @@ logger = logging.getLogger(__name__)
 # Model Hyperparams
 model_params = {
     "MODEL": "google/mt5-small",  # model_type: mt5-base/mt5-large
-    "TRAIN_BATCH_SIZE": 8,  # training batch size
-    "VALID_BATCH_SIZE": 8,  # validation batch size
-    "TRAIN_EPOCHS": 10,  # number of training epochs
-    "LEARNING_RATE": 1e-5,  # learning rate
+    "TRAIN_BATCH_SIZE": 4,  # training batch size
+    "VALID_BATCH_SIZE": 4,  # validation batch size
+    "TRAIN_EPOCHS": 4,  # number of training epochs
+    "LEARNING_RATE": 2e-4,  # learning rate
     "MAX_SOURCE_TEXT_LENGTH": 512,  # max length of source text
-    "MAX_TARGET_TEXT_LENGTH": 60,  # max length of target text
+    "MAX_TARGET_TEXT_LENGTH": 150,  # max length of target text
     "SEED": 42,  # set seed for reproducibility
 }
 
@@ -50,7 +50,7 @@ def main():
     logger.info("[Dataset] Loading dataset...")
     df = pd.read_parquet(
         "/data/imeza/text_datasets/data_summarization_with_title.parquet"
-    ).sample(1000, random_state=42)
+    ) #.sample(1000, random_state=42)
     # add summarize instruction to t5 to the main text.
     df["text"] = "summarize: " + df["text"]
 
