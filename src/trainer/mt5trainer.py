@@ -200,7 +200,7 @@ def mT5_trainer(
         params=model.parameters(), lr=model_params["LEARNING_RATE"]
     )
     scheduler = torch.optim.lr_scheduler.StepLR(
-        optimizer, step_size=1, gamma=0.1
+        optimizer, step_size=2, gamma=0.1
         )
 
     # ----------------------------------------------------------------------------------
