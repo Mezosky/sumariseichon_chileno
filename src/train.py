@@ -44,6 +44,39 @@ np.random.seed(model_params["SEED"])
 torch.backends.cudnn.deterministic = True
 
 
+def preprocess_dataset(
+    df: pd.DataFrame,
+    min_text_tokens: int = 20,
+    max_text_tokens: int = 100,
+    min_title_tokens: int = 5,
+    min_subhead_tokens: int = 10,
+) -> pd.DataFrame:
+
+    # dropna
+    df = df.dropna()
+
+    # delete all text, title and subhead nulls
+    df = df.loc[df["text"] != "", :]
+    df = df.loc[df["title"] != "", :]
+    df = df.loc[df["subhead"] != "", :]
+
+    # drop every article that has less or more text tokens than the allowed
+    text_n_tokens = df["text"].str.split(" ").apply(len)
+    df = df.loc[
+        (text_n_tokens >= min_text_tokens) & (text_n_tokens <= max_text_tokens), :
+    ]
+
+    # drop every article that has less title tokens than the allowed
+    title_n_tokens = df["title"].str.split(" ").apply(len)
+    df = df.loc[(title_n_tokens >= min_title_tokens), :]
+
+    # drop every article that has less subhead tokens than the allowed
+    subhead_n_tokens = df["subhead"].str.split(" ").apply(len)
+    df = df.loc[(subhead_n_tokens >= min_subhead_tokens), :]
+
+    return df
+
+
 def main():
     """Load data and start the finetune procces."""
 
@@ -62,6 +95,7 @@ def main():
         model_params=model_params,
         output_dir="/data/imeza/text_datasets/outputs_mT5",
     )
+
 
 if __name__ == "__main__":
     main()

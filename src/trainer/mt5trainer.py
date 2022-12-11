@@ -118,7 +118,7 @@ def train(
         loss = outputs[0]
 
         if batch_idx % 1 == 0:
-            mlflow.log_metric("Loss", loss, batch_idx+len(dataloader)*epoch)
+            mlflow.log_metric("Loss", loss, batch_idx + len(dataloader) * epoch)
 
             logger.info(
                 f"[Model training] Batch: {batch_idx+1}/{len(dataloader)} | "

@@ -1,0 +1,25 @@
+name: sum
+channels:
+  - pytorch
+  - nvidia
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10
+  - pip=22.3
+  - pytorch=1.13.0
+  - pytorch-cuda=11.7
+  - mlflow=1.2
+  - numpy=1.23
+  - pandas=1.5
+  - notebook
+  - pip:
+    - transformers==4.25
+    - tokenizers==0.13
+    - sentencepiece==0.1.97
+    - evaluation==0.0.2
+    - pre-commit==2.20.0
+    - tqdm==4.64.1
+    - flake8==4.0.1
+    - black==22.6.0
+    - isort==5.9.3
