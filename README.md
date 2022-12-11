@@ -11,6 +11,13 @@ Crear el ambiente e instalar los requerimientos:
 $ conda env create -f environment.yml
 ```
 
+(Opcional) En caso de necesitar los binarios de cuda, ejecutar:
+
+```bash
+$ conda install -c anaconda cudatoolkit
+```
+
+
 Para activarlo:
 
 ```bash
@@ -26,7 +33,7 @@ $ cd src
 $ python train.py
 ```
 
-Mientras, en otra terminal ejecutar
+Mientras, en otra terminal ejecutar:
 
 
 ```bash

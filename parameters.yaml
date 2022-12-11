@@ -1,0 +1,19 @@
+# seed
+SEED: 42
+
+# data params
+DATA_SAMPLE_SIZE: 40000
+TRAIN_SIZE: 0.8
+
+# model hyperparams
+MODEL: google/mt5-small  # model_type: mt5-base/mt5-large
+TRAIN_BATCH_SIZE: 16  # training batch size
+VALID_BATCH_SIZE: 16  # validation batch size
+TRAIN_EPOCHS: 10  # number of training epochs
+LEARNING_RATE: 2e-3  # learning rate
+MAX_SOURCE_TEXT_LENGTH: 512  # max length of source text
+MAX_TARGET_TEXT_LENGTH: 150  # max length of target text
+
+# paths
+
+OUTPUT_DIR: /data/imeza/text_datasets/outputs_mT5

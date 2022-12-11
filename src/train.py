@@ -4,6 +4,7 @@ import logging
 import numpy as np
 import pandas as pd
 import torch
+import yaml
 
 from trainer import mT5_trainer
 
@@ -27,20 +28,14 @@ logging.getLogger("").addHandler(console)
 logger = logging.getLogger(__name__)
 
 # Model Hyperparams
-model_params = {
-    "MODEL": "google/mt5-small",  # model_type: mt5-base/mt5-large
-    "TRAIN_BATCH_SIZE": 16,  # training batch size
-    "VALID_BATCH_SIZE": 16,  # validation batch size
-    "TRAIN_EPOCHS": 10,  # number of training epochs
-    "LEARNING_RATE": 2e-3,  # learning rate
-    "MAX_SOURCE_TEXT_LENGTH": 512,  # max length of source text
-    "MAX_TARGET_TEXT_LENGTH": 150,  # max length of target text
-    "SEED": 42,  # set seed for reproducibility
-}
+
+with open("parameters.yaml") as f:
+    params = yaml.load(f, Loader=yaml.BaseLoader)  # config is dict
+
 
 # Set random seeds and deterministic pytorch for reproducibility
-torch.manual_seed(model_params["SEED"])
-np.random.seed(model_params["SEED"])
+torch.manual_seed(params["SEED"])
+np.random.seed(params["SEED"])
 torch.backends.cudnn.deterministic = True
 
 
@@ -83,7 +78,7 @@ def main():
     logger.info("[Dataset] Loading dataset...")
     df = pd.read_parquet(
         "/data/imeza/text_datasets/data_summarization_with_title.parquet"
-    ).sample(40000, random_state=42)
+    ).sample(params["DATA_SAMPLE_SIZE"], random_state=42)
     # add summarize instruction to t5 to the main text.
     df["text"] = "summarize: " + df["text"]
 
@@ -92,8 +87,7 @@ def main():
     mT5_trainer(
         source_text=df.loc[:, "text"],
         target_text=df.loc[:, "headlines"],
-        model_params=model_params,
-        output_dir="/data/imeza/text_datasets/outputs_mT5",
+        params=params,
     )
 
 

@@ -139,3 +139,6 @@ T5_Fine_tuning_with_PyTorch.ipynb
 # mlflow logs
 mlruns/
 src/mlruns/
+
+# vscode
+.vscode
