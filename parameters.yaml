@@ -6,7 +6,7 @@ DATA_SAMPLE_SIZE: 40000
 TRAIN_SIZE: 0.8
 
 # model hyperparams
-MODEL: google/mt5-small  # model_type: mt5-base/mt5-large
+MODEL: "google/mt5-small"  # model_type: mt5-base/mt5-large
 TRAIN_BATCH_SIZE: 16  # training batch size
 VALID_BATCH_SIZE: 16  # validation batch size
 TRAIN_EPOCHS: 10  # number of training epochs
@@ -16,4 +16,5 @@ MAX_TARGET_TEXT_LENGTH: 150  # max length of target text
 
 # paths
 
-OUTPUT_DIR: /data/imeza/text_datasets/outputs_mT5
+OUTPUT_DIR: "/data/imeza/text_datasets/outputs_mT5"
+RAW_DATA_DIR: "/data/imeza/text_datasets/data_summarization_with_title.parquet"

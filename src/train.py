@@ -30,7 +30,7 @@ logger = logging.getLogger(__name__)
 # Model Hyperparams
 
 with open("parameters.yaml") as f:
-    params = yaml.load(f, Loader=yaml.BaseLoader)  # config is dict
+    params = yaml.load(f, Loader=yaml.loader.SafeLoader)  # config is dict
 
 
 # Set random seeds and deterministic pytorch for reproducibility
@@ -76,9 +76,9 @@ def main():
     """Load data and start the finetune procces."""
 
     logger.info("[Dataset] Loading dataset...")
-    df = pd.read_parquet(
-        "/data/imeza/text_datasets/data_summarization_with_title.parquet"
-    ).sample(params["DATA_SAMPLE_SIZE"], random_state=42)
+    df = pd.read_parquet(params["RAW_DATA_DIR"]).sample(
+        params["DATA_SAMPLE_SIZE"], random_state=params["SEED"]
+    )
     # add summarize instruction to t5 to the main text.
     df["text"] = "summarize: " + df["text"]
 
