@@ -1,5 +1,0 @@
-pandas==1.4.4
-torch==1.13.0
-numpy==1.23.3 
-transformers==4.24.0
-evaluate==0.3.0

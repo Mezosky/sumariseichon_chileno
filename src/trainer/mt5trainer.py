@@ -11,8 +11,6 @@ from torch import cuda
 from torch.utils.data import DataLoader
 from transformers import MT5ForConditionalGeneration, T5Tokenizer
 
-
-
 from trainer.split import split_data
 
 logger = logging.getLogger(__name__)
@@ -120,13 +118,12 @@ def train(
         loss = outputs[0]
 
         if batch_idx % 1 == 0:
-            mlflow.log_metric("Loss", loss, batch_idx+len(dataloader)*epoch)
+            mlflow.log_metric("Loss", loss, batch_idx + len(dataloader) * epoch)
 
             logger.info(
                 f"[Model training] Batch: {batch_idx+1}/{len(dataloader)} | "
                 f"Loss: {str(round(float(loss), 3))}"
             )
-
 
         loss.backward()
         optimizer.step()
@@ -135,8 +132,7 @@ def train(
 def mT5_trainer(
     source_text: pd.Series,
     target_text: pd.Series,
-    model_params: dict,
-    output_dir: str,
+    params: dict,
 ) -> None:
     """mT5 Training function.
 
@@ -146,23 +142,21 @@ def mT5_trainer(
         A series containing the source text (aka, text to summarize).
     target_text : pd.Series
         A series containing the target text (aka, the summarized text).
-    model_params : dict
-        Model parameters.
-    output_dir : str
-        An output path to store the model and intermediate results.
+    params : dict
+        Model and data parameters.
     """
 
     # ----------------------------------------------------------------------------------
     # Load pre-trained model and tokenizer
 
-    logger.info(f"[Model]: Loading {model_params['MODEL']} pre-trained model.")
+    logger.info(f"[Model]: Loading {params['MODEL']} pre-trained model.")
     # tokenizer for encoding the text
-    tokenizer = T5Tokenizer.from_pretrained(model_params["MODEL"])
+    tokenizer = T5Tokenizer.from_pretrained(params["MODEL"])
 
     # Define and load the model.
     # We are using t5-base model and added a Language model layer on top for
     # summarization.
-    model = MT5ForConditionalGeneration.from_pretrained(model_params["MODEL"])
+    model = MT5ForConditionalGeneration.from_pretrained(params["MODEL"])
     # send the to device (GPU/TPU).
     model = model.to(device)
     logger.info("[Model] Pre-trained model load successfully completed.\n")
@@ -175,19 +169,19 @@ def mT5_trainer(
         source_text,
         target_text,
         tokenizer,
-        model_params,
+        params,
     )
 
     logger.info("[Data]: Generating Dataloaders.\n")
     training_dataloader = DataLoader(
         training_dataset,
-        batch_size=model_params["TRAIN_BATCH_SIZE"],
+        batch_size=params["TRAIN_BATCH_SIZE"],
         shuffle=True,
         num_workers=0,
     )
     val_dataloader = DataLoader(
         val_dataset,
-        batch_size=model_params["VALID_BATCH_SIZE"],
+        batch_size=params["VALID_BATCH_SIZE"],
         shuffle=False,
         num_workers=0,
     )
@@ -195,13 +189,10 @@ def mT5_trainer(
     # ----------------------------------------------------------------------------------
     # Define the optimizer
 
-    # Defining the optimizer and scheduler that will be used to tune the weights in training session.
-    optimizer = torch.optim.AdamW(
-        params=model.parameters(), lr=model_params["LEARNING_RATE"]
-    )
-    scheduler = torch.optim.lr_scheduler.StepLR(
-        optimizer, step_size=2, gamma=0.1
-        )
+    # Defining the optimizer and scheduler that will be used to tune the weights in
+    # training session.
+    optimizer = torch.optim.AdamW(params=model.parameters(), lr=params["LEARNING_RATE"])
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=2, gamma=0.1)
 
     # ----------------------------------------------------------------------------------
     # Train-eval loop
@@ -209,9 +200,9 @@ def mT5_trainer(
     logger.info("[Model training] Starting model training...\n")
 
     with mlflow.start_run(run_name=str(datetime.now().isoformat())):
-        mlflow.log_params(model_params)
+        mlflow.log_params(params)
 
-        for epoch in range(model_params["TRAIN_EPOCHS"]):
+        for epoch in range(params["TRAIN_EPOCHS"]):
             train(
                 model=model,
                 tokenizer=tokenizer,
@@ -224,17 +215,19 @@ def mT5_trainer(
                 tokenizer=tokenizer,
                 dataloader=val_dataloader,
                 epoch=epoch,
-                output_dir=output_dir,
+                output_dir=params["output_dir"],
             )
 
             scheduler.step()
             logger.info("[Model training] Saving Model...\n")
 
             # Saving the model after training
-            model_path = os.path.join(output_dir, "model_files", str(epoch))
+            model_path = os.path.join(params["output_dir"], "model_files", str(epoch))
             model.save_pretrained(model_path)
             tokenizer.save_pretrained(model_path)
 
             logger.info(f"[Model training] Model saved @ {model_path}\n")
 
-    logger.info(f"[Logs] Logs saved @ {os.path.join(output_dir,'logs.txt')}\n")
+    logger.info(
+        f"[Logs] Logs saved @ {os.path.join(params['output_dir'],'logs.txt')}\n"
+    )

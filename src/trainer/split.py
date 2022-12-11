@@ -18,7 +18,7 @@ def split_data(
     # Creation of Dataset and Dataloader
     # Defining the train size. So 80% of the data will be used for training
     # and the rest for validation.
-    train_size = 0.8
+    train_size = params["test_size"]
 
     train_index = source_text.sample(frac=train_size, random_state=params["SEED"]).index
     val_index = source_text.drop(train_index).index
