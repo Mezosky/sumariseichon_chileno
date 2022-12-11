@@ -11,6 +11,8 @@ from torch import cuda
 from torch.utils.data import DataLoader
 from transformers import MT5ForConditionalGeneration, T5Tokenizer
 
+
+
 from trainer.split import split_data
 
 logger = logging.getLogger(__name__)
@@ -98,8 +100,8 @@ def train(
 
     model.train()
     for batch_idx, data in enumerate(dataloader, 0):
-        optimizer.zero_grad()
 
+        optimizer.zero_grad()
         y = data["target_ids"].to(device, dtype=torch.long)
         y_ids = y[:, :-1].contiguous()
 
@@ -124,6 +126,7 @@ def train(
                 f"[Model training] Batch: {batch_idx+1}/{len(dataloader)} | "
                 f"Loss: {str(round(float(loss), 3))}"
             )
+
 
         loss.backward()
         optimizer.step()
@@ -192,10 +195,13 @@ def mT5_trainer(
     # ----------------------------------------------------------------------------------
     # Define the optimizer
 
-    # Defining the optimizer that will be used to tune the weights in training session.
+    # Defining the optimizer and scheduler that will be used to tune the weights in training session.
     optimizer = torch.optim.AdamW(
         params=model.parameters(), lr=model_params["LEARNING_RATE"]
     )
+    scheduler = torch.optim.lr_scheduler.StepLR(
+        optimizer, step_size=2, gamma=0.1
+        )
 
     # ----------------------------------------------------------------------------------
     # Train-eval loop
@@ -221,6 +227,7 @@ def mT5_trainer(
                 output_dir=output_dir,
             )
 
+            scheduler.step()
             logger.info("[Model training] Saving Model...\n")
 
             # Saving the model after training
