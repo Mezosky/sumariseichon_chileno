@@ -23,13 +23,14 @@ Ejecutar:
 
 ```bash
 $ cd src
-$ python run.py
+$ python train.py
 ```
 
 Mientras, en otra terminal ejecutar
 
 
 ```bash
+$ cd src
 $ mlflow ui
 ```
 
